@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.io.File;
+import java.io.FileWriter;
 
 public class SurfaceEncoder implements AsyncProcessor {
 
@@ -46,6 +48,8 @@ public class SurfaceEncoder implements AsyncProcessor {
 
     private boolean firstFrameSent;
     private int consecutiveErrors;
+
+    private long firstTimestamp = -1;
 
     private Thread thread;
     private final AtomicBoolean stopped = new AtomicBoolean();
@@ -194,6 +198,23 @@ public class SurfaceEncoder implements AsyncProcessor {
         return 0;
     }
 
+    private void WriteTimestamp(MediaCodec.BufferInfo bufferInfo) {
+        if (firstTimestamp <= 0) {
+            firstTimestamp = bufferInfo.presentationTimeUs;
+            String filePath = "/data/local/tmp/video_first_ts.txt";
+            File file = new File(filePath);
+            try {
+                // 写入整数
+                FileWriter writer = new FileWriter(file);
+                writer.write(String.valueOf(firstTimestamp));
+                writer.flush();
+                writer.close();
+            } catch (IOException e) {
+                Ln.i("failed");
+            }
+        }
+    }
+
     private void encode(MediaCodec codec, Streamer streamer) throws IOException {
         MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
 
@@ -211,6 +232,7 @@ public class SurfaceEncoder implements AsyncProcessor {
                         // If this is not a config packet, then it contains a frame
                         firstFrameSent = true;
                         consecutiveErrors = 0;
+                        WriteTimestamp(bufferInfo);
                     }
 
                     streamer.writePacket(codecBuffer, bufferInfo);

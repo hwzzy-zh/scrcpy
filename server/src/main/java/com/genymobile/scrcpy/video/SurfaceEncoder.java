@@ -210,7 +210,7 @@ public class SurfaceEncoder implements AsyncProcessor {
                 writer.flush();
                 writer.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                Ln.i("failed");
             }
         }
     }
@@ -234,7 +234,7 @@ public class SurfaceEncoder implements AsyncProcessor {
                         consecutiveErrors = 0;
                         WriteTimestamp(bufferInfo);
                     }
-
+                    Ln.i("buffer get " + bufferInfo.presentationTimeUs);
                     streamer.writePacket(codecBuffer, bufferInfo);
                 }
             } finally {

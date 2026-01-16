@@ -234,7 +234,6 @@ public class SurfaceEncoder implements AsyncProcessor {
                         consecutiveErrors = 0;
                         WriteTimestamp(bufferInfo);
                     }
-                    Ln.i("buffer get " + bufferInfo.presentationTimeUs);
                     streamer.writePacket(codecBuffer, bufferInfo);
                 }
             } finally {

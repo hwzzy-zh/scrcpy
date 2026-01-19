@@ -99,6 +99,20 @@ static BOOL WINAPI windows_ctrl_handler(DWORD ctrl_type) {
     }
     return FALSE;
 }
+const char* NOTIFY_FILE = "D:\\notify.txt";
+static DWORD WINAPI file_listener_handler(LPVOID lpParam) {
+    LOGI("Create listen file: %s", NOTIFY_FILE);
+    while (1) {
+        FILE *fp = fopen(NOTIFY_FILE, "r");
+        if (fp) {
+            LOGI("Get end field notified");
+        }
+        fclose(fp);
+        sc_push_event(SDL_QUIT);
+        break;
+    }
+    return 0;
+}
 #endif // _WIN32
 
 static void
@@ -539,6 +553,13 @@ scrcpy(struct scrcpy_options *options) {
     }
 
     sdl_configure(options->video_playback, options->disable_screensaver);
+#ifdef _WIN32
+    HANDLE hThread = CreateThread(NULL, 0, file_listener_handler, NULL, 0, NULL);
+    if (hThread == NULL) {
+        LOGE("Could not create file listener: %ld", GetLastError());
+    }
+    LOGI("File listener create success");
+#endif
 
     // Await for server without blocking Ctrl+C handling
     bool connected;

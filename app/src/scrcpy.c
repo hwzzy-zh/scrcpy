@@ -106,10 +106,10 @@ static DWORD WINAPI file_listener_handler(LPVOID lpParam) {
         FILE *fp = fopen(NOTIFY_FILE, "r");
         if (fp) {
             LOGI("Get end field notified");
+            fclose(fp);
+            sc_push_event(SDL_QUIT);
+            break;
         }
-        fclose(fp);
-        sc_push_event(SDL_QUIT);
-        break;
     }
     return 0;
 }

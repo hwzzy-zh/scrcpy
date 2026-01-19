@@ -157,7 +157,7 @@ show_adb_err_msg(enum sc_process_result err, const char *const argv[]) {
 static bool
 process_check_success_internal(sc_pid pid, const char *name, bool close,
                                unsigned flags) {
-    bool log_errors = !(flags & SC_ADB_NO_LOGERR);
+    bool log_errors = true;
 
     if (pid == SC_PROCESS_NONE) {
         if (log_errors) {
